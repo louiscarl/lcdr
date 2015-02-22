@@ -1,0 +1,9 @@
+{
+  "name": "lcdr",
+  "version": "0.0.1",
+  "main": "main.js",
+  "dependencies": {
+	  "johnny-five": "*",
+	  "edison-io": "*"
+  }
+}
