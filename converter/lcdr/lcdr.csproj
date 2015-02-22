@@ -19,6 +19,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="app.css" />
+    <Content Include="car1.png" />
+    <Content Include="car2.png" />
+    <Content Include="car3.png" />
     <Content Include="client.js" />
     <Content Include="index.html" />
     <Content Include="road.png" />
