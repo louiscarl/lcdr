@@ -18,7 +18,7 @@ board.on("ready", function() {
 	var line2 = "play a game?    ";
 	var space = "                ";
 
-	var capabilities = {lcd: lcd, rotator: rotator, button: button, line1: line1, line2: line2};
+	var capabilities = {lcd: lcd, rotator: rotator, button: button, line1: line1, line2: line2, board: board};
 
 	var frame = 0;
 
@@ -33,7 +33,7 @@ board.on("ready", function() {
 	};
 
 	var mainMenuChoices = [
-		{text: "Outrunner", fn: dummyfn},
+		{text: "Outrunner", fn: require("./outrunner")},
 		{text: "Battleship", fn: dummyfn},
 		{text: "Naughts and Crosses", fn: require("./xo")}
 	];	
@@ -66,6 +66,9 @@ board.on("ready", function() {
 	
 	// 60FPS!
 	this.loop(16, function() {
+		if (capabilities.mainLoop) {
+			capabilities.mainLoop();
+		}
 		++frame;
 		var seconds = frame/60.0;
 		var line1Offset = lineOffset(capabilities.line1.length, seconds, 3, 2, 0.5);
