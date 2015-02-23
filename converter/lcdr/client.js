@@ -17,6 +17,8 @@ board.on("ready", function () {
         controller: "JHD1313M1"
     });
     var rotary = new five.Sensor('A0');
+    var sound = new five.Sensor('A1');
+    var led = new five.Led(8);
 
     var renderChar = function (buffer, lcd, idx) {
         var data = [];
@@ -27,6 +29,15 @@ board.on("ready", function () {
         return idx;
     };
 
+    var noise = 100;
+    sound.on('data', function () {
+        if (this.value > 500) {
+            if (noise < 200) {
+                noise += 50;
+            }
+        }
+    });
+
     var carPos = 8;
 
     rotary.on('data', function () {
@@ -35,12 +46,18 @@ board.on("ready", function () {
             // Right
             renderChar(car0RArr, lcd, 6);
             renderChar(car1RArr, lcd, 7);
-            carPos = carPos < 13 ? carPos + 0.25 : 13;
+
+            if (noise > 0) {
+                carPos = carPos < 14 ? carPos + 0.25 : 14;
+            }
         } else if (newRotary > 3) {
             // Left
             renderChar(car0LArr, lcd, 6);
             renderChar(car1LArr, lcd, 7);
-            carPos = carPos > 0 ? carPos - 0.25 : 0;
+
+            if (noise > 0) {
+                carPos = carPos > 0 ? carPos - 0.25 : 0;
+            }
         } else {
             // Straight
             renderChar(car0Arr, lcd, 6);
@@ -48,8 +65,25 @@ board.on("ready", function () {
         }
     });
 
-    setInterval(function () {
+    var interpolateColor = function (d) {
+        var r = 255 - 255 * d / 8;
+        var g = 50 + 205 * d / 8;
+        var b = 50;
+        lcd.bgColor(r, g, b);
+    }
+
+    this.loop(16, function () {
+        lcd.cursor(0, 0).print('                ');
         lcd.cursor(1, 0).print('                ');
         lcd.cursor(1, Math.floor(carPos)).print('\u0006\u0007');
-    }, 200);
+
+        var d = carPos > 7 ? 15 - carPos : carPos;
+        interpolateColor(d);
+
+        if (noise > 0) {
+            noise--;
+        }
+
+        lcd.cursor(0, 5).print(Math.floor(noise) + 'kph');
+    });
 });
