@@ -34,7 +34,7 @@ board.on("ready", function() {
 
 	var mainMenuChoices = [
 		{text: "Outrunner", fn: require("./outrunner")},
-		{text: "Battleship", fn: dummyfn},
+		{text: "Battleship", fn: require("./battleship")},
 		{text: "Naughts and Crosses", fn: require("./xo")}
 	];	
 	

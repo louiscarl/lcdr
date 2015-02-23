@@ -59,7 +59,11 @@ module.exports = function(caps, menuCallback) {
 
 		if (t > 1000) {
 			caps.mainLoop = null;
+			caps.lcd.bgColor(255,255,255);
 			menuCallback();
+		} else {
+			var cols = interpColorAtTime(t);
+			caps.lcd.bgColor(cols.r, cols.g, cols.b);
 		}
 	};
 	
@@ -84,5 +88,27 @@ var interpColorAtTime = function(t) {
 	ret.r = 255;
 	ret.g = 255;
 	ret.b = 255;
+
+	
+
+	if (t < 500) {
+		var pct = t/500;
+		// blue to yellow;
+		ret.r = 128 * (pct);
+		ret.g = 128 * pct;
+		ret.b = 255 * (1-pct);
+	} else if (t < 800) {
+		// yellow to red;
+		var pct = (t-500)/500;
+		ret.b = 0;
+		ret.r = 255 * (0.5 + (pct * 0.5));
+		ret.g = 128 * (1-pct);
+	} else {
+		var pct = (t-800)/200;
+		ret.b = 0;
+		ret.r = 255 * (1-pct)
+		ret.g = 0;
+	}
+
 	return ret;
 }
