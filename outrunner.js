@@ -23,14 +23,55 @@ var turn = function (row, amp, waveLen, time) {
 
 module.exports = function(caps, menuCallback) {
 	
-	caps.rotator.on("data", function() {
+    var carPos = 8;
 
+    var car0Arr = [0x0, 0xf, 0x8, 0x2, 0xc, 0xf, 0xc];
+    var car1Arr = [0x0, 0x1e, 0x2, 0x8, 0x6, 0x1e, 0x6];
+    var car0LArr = [0x0, 0x7, 0x4, 0x19, 0x1c, 0x1f, 0xc];
+    var car1LArr = [0x0, 0x1e, 0x2, 0x4, 0x3, 0x1f, 0x3];
+    var car0RArr = [0x0, 0xf, 0x8, 0x4, 0x18, 0x1f, 0x18];
+    var car1RArr = [0x0, 0x1c, 0x4, 0x13, 0x7, 0x1f, 0x6];
+
+    var lcd = caps.lcd;
+    var renderChar = render.renderChar;
+	caps.rotator.on("data", function() {
+	    var newRotary = Math.floor(this.value / 1024 * 5);
+	    if (newRotary < 3) {
+	        // Right
+	        renderChar(car0LArr, lcd, 6);
+	        renderChar(car1LArr, lcd, 7);
+
+	        if (noise > 0) {
+	            carPos = carPos < 14 ? carPos + 0.25 : 14;
+	        }
+	    } else if (newRotary > 3) {
+	        // Left
+	        renderChar(car0RArr, lcd, 6);
+	        renderChar(car1RArr, lcd, 7);
+
+	        if (noise > 0) {
+	            carPos = carPos > 0 ? carPos - 0.25 : 0;
+	        }
+	    } else {
+	        // Straight
+	        renderChar(car0Arr, lcd, 6);
+	        renderChar(car1Arr, lcd, 7);
+	    }
+	});
+
+	var noise = 100;
+	caps.sound.on('data', function () {
+	    if (this.value > 500) {
+	        if (noise < 200) {
+	            noise += 50;
+	        }
+	    }
 	});
 
 	caps.lcd.bgColor(0,0,255);
 	
 	var t = 0;
-    var waveLen = 10;
+    var waveLen = 5;
 	caps.mainLoop = function() {
 		if (t % 50 === 0) {
             amp = Math.random() * 4;
@@ -55,7 +96,21 @@ module.exports = function(caps, menuCallback) {
 
 		caps.line1 = " \u0001            \u0002 ";
 		caps.line2 = "\u0004\u0000            \u0003\u0005";
-		t++
+
+		var index = 5;
+		var kph = Math.floor(noise) + 'kph';
+		caps.line1 = caps.line1.substr(0, index) + kph
+	        + caps.line1.substr(index + kph.length);
+
+		index = Math.floor(carPos);
+		caps.line2 = caps.line2.substr(0, index)
+            + '\u0007\u0006'
+            + caps.line2.substr(index + 2);
+
+		if (noise > 0) {
+		    t++;
+		    noise--;
+		}
 
 		if (t > 1000) {
 			caps.mainLoop = null;

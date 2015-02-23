@@ -11,14 +11,15 @@ board.on("ready", function() {
 	});
 
 	var rotator = new five.Sensor("A0");
-	var button = new five.Button(2);
+	var sound = new five.Sensor('A1');
+	var button = new five.Button(4);
 
 	//           123456789abcdef0
 	var line1 = "Do you want to  ";
 	var line2 = "play a game?    ";
 	var space = "                ";
 
-	var capabilities = {lcd: lcd, rotator: rotator, button: button, line1: line1, line2: line2, board: board};
+	var capabilities = {lcd: lcd, rotator: rotator, button: button, line1: line1, line2: line2, board: board, sound: sound};
 
 	var frame = 0;
 
@@ -33,8 +34,8 @@ board.on("ready", function() {
 	};
 
 	var mainMenuChoices = [
-		{text: "Outrunner", fn: require("./outrunner")},
-		{text: "Battleship", fn: dummyfn},
+		{ text: "Battleship", fn: dummyfn },
+        { text: "Outrunner", fn: require("./outrunner") },
 		{text: "Naughts and Crosses", fn: require("./xo")}
 	];	
 	
