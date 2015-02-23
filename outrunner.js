@@ -161,8 +161,8 @@ var interpColorAtTime = function(t) {
 	} else {
 		var pct = (t-800)/200;
 		ret.b = 0;
-		ret.r = 255 * (1-pct)
-		ret.g = 0;
+		ret.r = 255 * (0.5 + (0.6 * 0.5)) * (1-pct)
+		ret.g = 128 * (1-.6) * (1-pct);
 	}
 
 	return ret;
